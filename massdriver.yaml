@@ -1,0 +1,144 @@
+schema: draft-07
+name: "aws-s3-logs-bucket"
+description: "An AWS S3 bucket intended for storing logs"
+source_url: github.com/massdriver-cloud/aws-s3-logs-bucket
+access: public
+type: infrastructure
+
+params:
+  examples:
+    - __name: Development
+      lifecycle_settings:
+        transition_rules: []
+        expire: true
+        expiration_days: 30
+      monitoring:
+        access_logging: false
+    - __name: Production
+      lifecycle_settings:
+        transition_rules:
+          - storage_class: INTELLIGENT_TIERING
+            days: 30
+        expire: true
+        expiration_days: 365
+      monitoring:
+        access_logging: false
+  required:
+    - bucket
+    - lifecycle_settings
+    - monitoring
+  properties:
+    bucket:
+      type: object
+      title: Bucket Configuration
+      required:
+        - region
+      properties:
+        region:
+          $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/aws-region.json
+          $md.immutable: true
+    lifecycle_settings:
+      title: Object Lifecycle Settings
+      type: object
+      required:
+        - transition_rules
+        - expire
+      properties:
+        transition_rules:
+          title: Object Transition Rules
+          description: Specify the rules to transition objects to cheaper storage classes over time. [Refer to the documentation for transition constraints](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html).
+          type: array
+          default: []
+          items:
+            type: object
+            required:
+              - storage_class
+              - days
+            properties:
+              storage_class:
+                title: Storage Class
+                description: S3 storage class to transition to. Refer to the [AWS S3 storage class documentation](https://aws.amazon.com/s3/storage-classes/) for details on each storage class.
+                type: string
+                oneOf: 
+                - title: Intelligent-Tiering
+                  const: INTELLIGENT_TIERING
+                - title: Standard-Infrequent Access
+                  const: STANDARD_IA
+                - title: One Zone-Infrequent Access
+                  const: ONEZONE_IA
+                - title: Glacier Instant Retrieval
+                  const: GLACIER_IR
+                - title: Glacier Flexible Retrieval
+                  const: GLACIER
+                - title: Glacier Deep Archive
+                  const: DEEP_ARCHIVE
+              days:
+                title: Days
+                description: Number of days after creation when objects are transitioned to the specified storage class.
+                type: integer
+                minimum: 0
+        expire:
+          title: Enable Expiration
+          description: Enable the expiration (deletion) of objects after the specified time
+          type: boolean
+      dependencies:
+        expire:
+          oneOf:
+            - properties:
+                expire:
+                  const: false
+            - properties:
+                expire:
+                  const: true
+                expiration_days:
+                  title: Expiration Days
+                  description: Number of days after create when objects will expire
+                  type: integer
+                  minimum: 1
+              required:
+                - expiration_days
+    monitoring:
+      title: Monitoring
+      type: object
+      required:
+        - access_logging
+      properties:
+        access_logging:
+          title: Enable Access Logging
+          description: Enabling this will create an additional bucket for storing [access logs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html)
+          type: boolean
+          default: false
+
+
+
+
+connections:
+  required:
+  - aws_authentication
+  properties:
+    aws_authentication:
+      $ref: massdriver/aws-iam-role
+
+artifacts:
+  required:
+    - bucket
+  properties:
+    bucket:
+      $ref: massdriver/aws-s3-bucket
+
+ui:
+  ui:order:
+    - bucket
+    - lifecycle_settings
+    - monitoring
+  bucket:
+    ui:order:
+      - "*"
+    region:
+      ui:field: supportedCloudLocationsDropdown
+      cloudService: aws
+  lifecycle_settings:
+    ui:order:
+      - transition_rules
+      - expire
+      - expiration_days
