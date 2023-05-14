@@ -59,7 +59,7 @@ params:
                 title: Storage Class
                 description: S3 storage class to transition to. Refer to the [AWS S3 storage class documentation](https://aws.amazon.com/s3/storage-classes/) for details on each storage class.
                 type: string
-                oneOf: 
+                oneOf:
                 - title: Intelligent-Tiering
                   const: INTELLIGENT_TIERING
                 - title: Standard-Infrequent Access

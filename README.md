@@ -64,13 +64,52 @@ Form input parameters for configuring a bundle for deployment.
     "us-west-2"
     ```
 
+- **`lifecycle_settings`** *(object)*
+  - **`expire`** *(boolean)*: Enable the expiration (deletion) of objects after the specified time.
+  - **`transition_rules`** *(array)*: Specify the rules to transition objects to cheaper storage classes over time. [Refer to the documentation for transition constraints](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html). Default: `[]`.
+    - **Items** *(object)*
+      - **`days`** *(integer)*: Number of days after creation when objects are transitioned to the specified storage class. Minimum: `0`.
+      - **`storage_class`** *(string)*: S3 storage class to transition to. Refer to the [AWS S3 storage class documentation](https://aws.amazon.com/s3/storage-classes/) for details on each storage class.
+        - **One of**
+          - Intelligent-Tiering
+          - Standard-Infrequent Access
+          - One Zone-Infrequent Access
+          - Glacier Instant Retrieval
+          - Glacier Flexible Retrieval
+          - Glacier Deep Archive
+- **`monitoring`** *(object)*
+  - **`access_logging`** *(boolean)*: Enabling this will create an additional bucket for storing [access logs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html). Default: `False`.
 ## Examples
 
   ```json
   {
-      "__name": "Default",
-      "bucket": {
-          "region": "us-west-2"
+      "__name": "Development",
+      "lifecycle_settings": {
+          "expiration_days": 30,
+          "expire": true,
+          "transition_rules": []
+      },
+      "monitoring": {
+          "access_logging": false
+      }
+  }
+  ```
+
+  ```json
+  {
+      "__name": "Production",
+      "lifecycle_settings": {
+          "expiration_days": 365,
+          "expire": true,
+          "transition_rules": [
+              {
+                  "days": 30,
+                  "storage_class": "INTELLIGENT_TIERING"
+              }
+          ]
+      },
+      "monitoring": {
+          "access_logging": false
       }
   }
   ```
@@ -112,11 +151,6 @@ Connections from other bundles that this bundle depends on.
         "us-west-2"
         ```
 
-      - **`resource`** *(string)*
-      - **`service`** *(string)*
-      - **`zone`** *(string)*: AWS Availability Zone.
-
-        Examples:
 <!-- CONNECTIONS:END -->
 
 </details>
@@ -147,7 +181,7 @@ Resources created by this bundle that can be connected to other bundles.
 
     - **`security`** *(object)*: Informs downstream services of network and/or IAM policies. Cannot contain additional properties.
       - **`iam`** *(object)*: IAM Policies. Cannot contain additional properties.
-        - **`^[a-z-/]+$`** *(object)*
+        - **`^[a-z]+[a-z_]*[a-z]+$`** *(object)*
           - **`policy_arn`** *(string)*: AWS IAM policy ARN.
 
             Examples:
@@ -158,6 +192,18 @@ Resources created by this bundle that can be connected to other bundles.
             ```json
             "arn:aws:ec2::ACCOUNT_NUMBER:vpc/vpc-foo"
             ```
+
+      - **`identity`** *(object)*: For instances where IAM policies must be attached to a role attached to an AWS resource, for instance AWS Eventbridge to Firehose, this attribute should be used to allow the downstream to attach it's policies (Firehose) directly to the IAM role created by the upstream (Eventbridge). It is important to remember that connections in massdriver are one way, this scheme perserves the dependency relationship while allowing bundles to control the lifecycles of resources under it's management. Cannot contain additional properties.
+        - **`role_arn`** *(string)*: ARN for this resources IAM Role.
+
+          Examples:
+          ```json
+          "arn:aws:rds::ACCOUNT_NUMBER:db/prod"
+          ```
+
+          ```json
+          "arn:aws:ec2::ACCOUNT_NUMBER:vpc/vpc-foo"
+          ```
 
       - **`network`** *(object)*: AWS security group rules to inform downstream services of ports to open for communication. Cannot contain additional properties.
         - **`^[a-z-]+$`** *(object)*
@@ -183,11 +229,6 @@ Resources created by this bundle that can be connected to other bundles.
         "us-west-2"
         ```
 
-      - **`resource`** *(string)*
-      - **`service`** *(string)*
-      - **`zone`** *(string)*: AWS Availability Zone.
-
-        Examples:
 <!-- ARTIFACTS:END -->
 
 </details>
