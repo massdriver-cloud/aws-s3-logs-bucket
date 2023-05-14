@@ -109,7 +109,7 @@ Form input parameters for configuring a bundle for deployment.
           ]
       },
       "monitoring": {
-          "access_logging": false
+          "access_logging": true
       }
   }
   ```

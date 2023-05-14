@@ -22,7 +22,7 @@ params:
         expire: true
         expiration_days: 365
       monitoring:
-        access_logging: false
+        access_logging: true
   required:
     - bucket
     - lifecycle_settings
