@@ -81,6 +81,7 @@ params:
           title: Enable Expiration
           description: Enable the expiration (deletion) of objects after the specified time
           type: boolean
+          default: false
       dependencies:
         expire:
           oneOf:

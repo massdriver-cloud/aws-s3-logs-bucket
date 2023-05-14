@@ -65,7 +65,7 @@ Form input parameters for configuring a bundle for deployment.
     ```
 
 - **`lifecycle_settings`** *(object)*
-  - **`expire`** *(boolean)*: Enable the expiration (deletion) of objects after the specified time.
+  - **`expire`** *(boolean)*: Enable the expiration (deletion) of objects after the specified time. Default: `False`.
   - **`transition_rules`** *(array)*: Specify the rules to transition objects to cheaper storage classes over time. [Refer to the documentation for transition constraints](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html). Default: `[]`.
     - **Items** *(object)*
       - **`days`** *(integer)*: Number of days after creation when objects are transitioned to the specified storage class. Minimum: `0`.
