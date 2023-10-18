@@ -144,6 +144,8 @@ ui:
     - monitoring
   bucket:
     ui:order:
+      - region
+      - force_destroy
       - "*"
     region:
       ui:field: supportedCloudLocationsDropdown
