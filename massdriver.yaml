@@ -8,6 +8,8 @@ type: infrastructure
 params:
   examples:
     - __name: Development
+      bucket:
+        force_destroy: true
       lifecycle_settings:
         transition_rules: []
         expire: true
@@ -15,6 +17,8 @@ params:
       monitoring:
         access_logging: false
     - __name: Production
+      bucket:
+        force_destroy: false
       lifecycle_settings:
         transition_rules:
           - storage_class: INTELLIGENT_TIERING
@@ -33,10 +37,16 @@ params:
       title: Bucket Configuration
       required:
         - region
+        - force_destroy
       properties:
         region:
           $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/aws-region.json
           $md.immutable: true
+        force_destroy:
+          title: Force Destroy Objects
+          description: "**WARNING** Enabling this will delete all objects in the bucket during decommission. Disabling will block bucket deletion unless the bucket is empty."
+          type: boolean
+          default: false
     lifecycle_settings:
       title: Object Lifecycle Settings
       type: object
@@ -134,6 +144,8 @@ ui:
     - monitoring
   bucket:
     ui:order:
+      - region
+      - force_destroy
       - "*"
     region:
       ui:field: supportedCloudLocationsDropdown
