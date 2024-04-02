@@ -57,6 +57,7 @@ Form input parameters for configuring a bundle for deployment.
 ## Properties
 
 - **`bucket`** *(object)*
+  - **`force_destroy`** *(boolean)*: **WARNING** Enabling this will delete all objects in the bucket during decommission. Disabling will block bucket deletion unless the bucket is empty. Default: `False`.
   - **`region`** *(string)*: AWS Region to provision in.
 
     Examples:
@@ -84,6 +85,9 @@ Form input parameters for configuring a bundle for deployment.
   ```json
   {
       "__name": "Development",
+      "bucket": {
+          "force_destroy": true
+      },
       "lifecycle_settings": {
           "expiration_days": 30,
           "expire": true,
@@ -98,6 +102,9 @@ Form input parameters for configuring a bundle for deployment.
   ```json
   {
       "__name": "Production",
+      "bucket": {
+          "force_destroy": false
+      },
       "lifecycle_settings": {
           "expiration_days": 365,
           "expire": true,
