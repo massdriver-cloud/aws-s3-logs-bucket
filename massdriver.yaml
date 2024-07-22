@@ -37,10 +37,17 @@ params:
       title: Bucket Configuration
       required:
         - region
+        - customer_managed_key
         - force_destroy
       properties:
         region:
           $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/aws-region.json
+          $md.immutable: true
+        customer_managed_key:
+          title: Customer Managed KMS Key
+          description: Enabling this will provision a new customer managed KMS key for object encryption. Leave this setting disabled to use default encryption.
+          type: boolean
+          default: false
           $md.immutable: true
         force_destroy:
           title: Force Destroy Objects
@@ -145,6 +152,7 @@ ui:
   bucket:
     ui:order:
       - region
+      - customer_managed_key
       - force_destroy
       - "*"
     region:

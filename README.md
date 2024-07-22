@@ -40,6 +40,7 @@ Form input parameters for configuring a bundle for deployment.
 ## Properties
 
 - **`bucket`** *(object)*
+  - **`customer_managed_key`** *(boolean)*: Enabling this will provision a new customer managed KMS key for object encryption. Leave this setting disabled to use default encryption. Default: `False`.
   - **`force_destroy`** *(boolean)*: **WARNING** Enabling this will delete all objects in the bucket during decommission. Disabling will block bucket deletion unless the bucket is empty. Default: `False`.
   - **`region`** *(string)*: AWS Region to provision in.
 
