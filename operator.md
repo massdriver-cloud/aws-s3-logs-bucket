@@ -4,7 +4,7 @@ Amazon Simple Storage Service (Amazon S3) is an object storage service that offe
 
 ### Design Decisions
 
-- **Bucket Security**: ACLs are disabled to enforce bucket owner control and public access is blocked.
+- **Bucket Security**: ACLs are disabled to enforce bucket owner control (IAM based access) and public access is blocked.
 - **Server-Side Encryption**: Using AWS KMS for secure object storage, with optional user-managed keys.
 - **Lifecycle Policies**: Supports transition to different storage classes and automated expiration.
 - **Access Logging**: Optional configuration for logging access requests, with lifecycle configuration for efficient log management.
@@ -96,4 +96,3 @@ aws iam list-attached-role-policies --role-name <rolename>
 ```
 
 Inspect the listed policies to confirm that necessary S3 permissions are granted.
-
