@@ -1,54 +1,53 @@
 schema: draft-07
-name: "aws-s3-logs-bucket"
-description: "An AWS S3 bucket intended for storing logs"
-source_url: github.com/massdriver-cloud/aws-s3-logs-bucket
-access: public
-type: infrastructure
-
+name: aws-s3-logs-bucket
+version: 1.0.0
+description: An AWS S3 bucket intended for storing logs
+source_url: https://github.com/massdriver-cloud/aws-s3-logs-bucket
+type: application
 params:
   examples:
-    - __name: Development
-      bucket:
-        force_destroy: true
-      lifecycle_settings:
-        transition_rules: []
-        expire: true
-        expiration_days: 30
-      monitoring:
-        access_logging: false
-    - __name: Production
-      bucket:
-        force_destroy: false
-      lifecycle_settings:
-        transition_rules:
-          - storage_class: INTELLIGENT_TIERING
-            days: 30
-        expire: true
-        expiration_days: 365
-      monitoring:
-        access_logging: true
+  - __name: Development
+    bucket:
+      force_destroy: true
+    lifecycle_settings:
+      transition_rules: []
+      expire: true
+      expiration_days: 30
+    monitoring:
+      access_logging: false
+  - __name: Production
+    bucket:
+      force_destroy: false
+    lifecycle_settings:
+      transition_rules:
+      - storage_class: INTELLIGENT_TIERING
+        days: 30
+      expire: true
+      expiration_days: 365
+    monitoring:
+      access_logging: true
   required:
-    - bucket
-    - lifecycle_settings
-    - monitoring
+  - bucket
+  - lifecycle_settings
+  - monitoring
   properties:
     bucket:
       type: object
       title: Bucket Configuration
       required:
-        - region
-        - customer_managed_key
-        - force_destroy
+      - region
+      - customer_managed_key
+      - force_destroy
       properties:
         region:
-          $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/aws-region.json
-          $md.immutable: true
+          "$ref": https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/aws-region.json
+          "$md.immutable": true
         customer_managed_key:
           title: Customer Managed KMS Key
           description: Enabling this will provision a new customer managed KMS key for object encryption. Leave this setting disabled to use default encryption.
           type: boolean
           default: false
-          $md.immutable: true
+          "$md.immutable": true
         force_destroy:
           title: Force Destroy Objects
           description: "**WARNING** Enabling this will delete all objects in the bucket during decommission. Disabling will block bucket deletion unless the bucket is empty."
@@ -58,8 +57,8 @@ params:
       title: Object Lifecycle Settings
       type: object
       required:
-        - transition_rules
-        - expire
+      - transition_rules
+      - expire
       properties:
         transition_rules:
           title: Object Transition Rules
@@ -69,8 +68,8 @@ params:
           items:
             type: object
             required:
-              - storage_class
-              - days
+            - storage_class
+            - days
             properties:
               storage_class:
                 title: Storage Class
@@ -102,64 +101,64 @@ params:
       dependencies:
         expire:
           oneOf:
-            - properties:
-                expire:
-                  const: false
-            - properties:
-                expire:
-                  const: true
-                expiration_days:
-                  title: Expiration Days
-                  description: Number of days after create when objects will expire
-                  type: integer
-                  minimum: 1
-              required:
-                - expiration_days
+          - properties:
+              expire:
+                const: false
+          - properties:
+              expire:
+                const: true
+              expiration_days:
+                title: Expiration Days
+                description: Number of days after create when objects will expire
+                type: integer
+                minimum: 1
+            required:
+            - expiration_days
     monitoring:
       title: Monitoring
       type: object
       required:
-        - access_logging
+      - access_logging
       properties:
         access_logging:
           title: Enable Access Logging
           description: Enabling this will create an additional bucket for storing [access logs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html)
           type: boolean
           default: false
-
-
-
-
 connections:
   required:
   - aws_authentication
   properties:
     aws_authentication:
-      $ref: massdriver/aws-iam-role
-
+      "$ref": massdriver/aws-iam-role
 artifacts:
   required:
-    - bucket
+  - bucket
   properties:
     bucket:
-      $ref: massdriver/aws-s3-bucket
-
+      "$ref": massdriver/aws-s3-bucket
 ui:
   ui:order:
-    - bucket
-    - lifecycle_settings
-    - monitoring
+  - bucket
+  - lifecycle_settings
+  - monitoring
   bucket:
     ui:order:
-      - region
-      - customer_managed_key
-      - force_destroy
-      - "*"
+    - region
+    - customer_managed_key
+    - force_destroy
+    - "*"
     region:
       ui:field: supportedCloudLocationsDropdown
       cloudService: aws
   lifecycle_settings:
     ui:order:
-      - transition_rules
-      - expire
-      - expiration_days
+    - transition_rules
+    - expire
+    - expiration_days
+steps:
+- path: src
+  provisioner: opentofu
+  config:
+    checkov:
+      enable: true
