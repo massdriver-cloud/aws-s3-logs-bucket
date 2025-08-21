@@ -1,7 +1,6 @@
 resource "massdriver_artifact" "bucket" {
-  field                = "bucket"
-  provider_resource_id = aws_s3_bucket.main.arn
-  name                 = "AWS S3 Bucket: ${aws_s3_bucket.main.arn}"
+  field = "bucket"
+  name  = "AWS S3 Bucket: ${aws_s3_bucket.main.arn}"
   artifact = jsonencode(
     {
       data = {
