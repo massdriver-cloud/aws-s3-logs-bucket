@@ -12,6 +12,8 @@ params:
       transition_rules: []
       expire: true
       expiration_days: 30
+    encryption:
+      custom_kms_key: false
     monitoring:
       access_logging: false
   - __name: Production
@@ -23,11 +25,14 @@ params:
         days: 30
       expire: true
       expiration_days: 365
+    encryption:
+      custom_kms_key: false
     monitoring:
       access_logging: true
   required:
   - bucket
   - lifecycle_settings
+  - encryption
   - monitoring
   properties:
     bucket:
@@ -35,17 +40,10 @@ params:
       title: Bucket Configuration
       required:
       - region
-      - customer_managed_key
       - force_destroy
       properties:
         region:
           "$ref": https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/aws-region.json
-          "$md.immutable": true
-        customer_managed_key:
-          title: Customer Managed KMS Key
-          description: Enabling this will provision a new customer managed KMS key for object encryption. Leave this setting disabled to use default encryption.
-          type: boolean
-          default: false
           "$md.immutable": true
         force_destroy:
           title: Force Destroy Objects
@@ -113,6 +111,18 @@ params:
                 minimum: 1
             required:
             - expiration_days
+    encryption:
+      title: Encryption
+      type: object
+      required:
+      - custom_kms_key
+      properties:
+        custom_kms_key:
+          title: Custom KMS Key
+          description: Enable encryption with a custom KMS key. By default, the bucket will use AWS-managed encryption.
+          type: boolean
+          "$md.immutable": true
+          default: false
     monitoring:
       title: Monitoring
       type: object
@@ -140,11 +150,11 @@ ui:
   ui:order:
   - bucket
   - lifecycle_settings
+  - encryption
   - monitoring
   bucket:
     ui:order:
     - region
-    - customer_managed_key
     - force_destroy
     - "*"
     region:

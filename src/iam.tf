@@ -21,12 +21,12 @@ data "aws_iam_policy_document" "bucket_read" {
     ]
   }
   dynamic "statement" {
-    for_each = var.bucket.customer_managed_key ? toset(["cmk"]) : toset([])
+    for_each = var.encryption.custom_kms_key ? toset(["cmk"]) : toset([])
     content {
       sid    = "DecryptAccess"
       effect = "Allow"
       resources = [
-        module.kms.0.key_arn
+        module.kms[0].key_arn
       ]
       actions = [
         "kms:Decrypt"
@@ -60,12 +60,12 @@ data "aws_iam_policy_document" "bucket_write" {
     ]
   }
   dynamic "statement" {
-    for_each = var.bucket.customer_managed_key ? toset(["cmk"]) : toset([])
+    for_each = var.encryption.custom_kms_key ? toset(["cmk"]) : toset([])
     content {
       sid    = "EncryptAccess"
       effect = "Allow"
       resources = [
-        module.kms.0.key_arn
+        module.kms[0].key_arn
       ]
       actions = [
         "kms:Decrypt",

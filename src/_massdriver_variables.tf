@@ -5,18 +5,17 @@ variable "aws_authentication" {
       arn         = string
       external_id = optional(string)
     })
-    specs = object({
-      aws = optional(object({
-        region = optional(string)
-      }))
-    })
   })
 }
 variable "bucket" {
   type = object({
-    customer_managed_key = bool
-    force_destroy        = bool
-    region               = string
+    force_destroy = bool
+    region        = string
+  })
+}
+variable "encryption" {
+  type = object({
+    custom_kms_key = bool
   })
 }
 variable "lifecycle_settings" {

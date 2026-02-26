@@ -40,7 +40,6 @@ Form input parameters for configuring a bundle for deployment.
 ## Properties
 
 - **`bucket`** *(object)*
-  - **`customer_managed_key`** *(boolean)*: Enabling this will provision a new customer managed KMS key for object encryption. Leave this setting disabled to use default encryption. Default: `False`.
   - **`force_destroy`** *(boolean)*: **WARNING** Enabling this will delete all objects in the bucket during decommission. Disabling will block bucket deletion unless the bucket is empty. Default: `False`.
   - **`region`** *(string)*: AWS Region to provision in.
 
@@ -62,6 +61,8 @@ Form input parameters for configuring a bundle for deployment.
           - Glacier Instant Retrieval
           - Glacier Flexible Retrieval
           - Glacier Deep Archive
+- **`encryption`** *(object)*
+  - **`custom_kms_key`** *(boolean)*: Enable encryption with a custom KMS key. By default, the bucket will use AWS-managed encryption. Default: `False`.
 - **`monitoring`** *(object)*
   - **`access_logging`** *(boolean)*: Enabling this will create an additional bucket for storing [access logs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html). Default: `False`.
 ## Examples
@@ -71,6 +72,9 @@ Form input parameters for configuring a bundle for deployment.
       "__name": "Development",
       "bucket": {
           "force_destroy": true
+      },
+      "encryption": {
+          "custom_kms_key": false
       },
       "lifecycle_settings": {
           "expiration_days": 30,
@@ -88,6 +92,9 @@ Form input parameters for configuring a bundle for deployment.
       "__name": "Production",
       "bucket": {
           "force_destroy": false
+      },
+      "encryption": {
+          "custom_kms_key": false
       },
       "lifecycle_settings": {
           "expiration_days": 365,
