@@ -3,18 +3,16 @@ resource "massdriver_artifact" "bucket" {
   name  = "AWS S3 Bucket: ${aws_s3_bucket.main.arn}"
   artifact = jsonencode(
     {
-      data = {
-        infrastructure = {
-          arn = aws_s3_bucket.main.arn
-        }
-        security = {
-          iam = {
-            read = {
-              policy_arn = aws_iam_policy.read.arn
-            }
-            write = {
-              policy_arn = aws_iam_policy.write.arn
-            }
+      infrastructure = {
+        arn = aws_s3_bucket.main.arn
+      }
+      security = {
+        iam = {
+          read = {
+            policy_arn = aws_iam_policy.read.arn
+          }
+          write = {
+            policy_arn = aws_iam_policy.write.arn
           }
         }
       }
